@@ -2,13 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -22,6 +16,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
+import Link from "next/link";
+import Image from "next/image";
 
 const LoginFormSchema = z.object({
   email: z
@@ -67,17 +63,17 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <Card className="overflow-hidden p-0">
+        <CardContent className="grid p-0 md:grid-cols-2">
           <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
               <div className="flex flex-col gap-6">
+                <div className="flex flex-col items-center text-center">
+                  <h1 className="text-2xl font-bold">Welcome back</h1>
+                  <p className="text-balance text-muted-foreground">
+                    Login to your account
+                  </p>
+                </div>
                 <div className="grid gap-2">
                   <FormField
                     control={control}
@@ -111,15 +107,27 @@ export function LoginForm({
                 <Button type="submit" className="w-full">
                   Login
                 </Button>
-              </div>
-              <div className="mt-4 text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <a href="/register" className="underline underline-offset-4">
-                  Sign up
-                </a>
+
+                <div className="text-center text-sm">
+                  Don&apos;t have an account?{" "}
+                  <Link
+                    href="/register"
+                    className="underline underline-offset-4"
+                  >
+                    Sign up
+                  </Link>
+                </div>
               </div>
             </form>
           </Form>
+          <div className="relative hidden bg-muted md:block">
+            <Image
+              src="https://ui.shadcn.com/placeholder.svg"
+              alt="Image"
+              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              fill
+            />
+          </div>
         </CardContent>
       </Card>
     </div>
