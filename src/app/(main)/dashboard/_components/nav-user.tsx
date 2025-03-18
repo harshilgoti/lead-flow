@@ -1,7 +1,7 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   SidebarMenu,
@@ -18,6 +18,7 @@ export function NavUser({
     avatar: string;
   };
 }) {
+  const router = useRouter();
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -33,7 +34,13 @@ export function NavUser({
             <span className="truncate font-semibold">{user.name}</span>
             <span className="truncate text-xs">{user.email}</span>
           </div>
-          <LogOut className="cursor-pointer" />
+          <LogOut
+            className="cursor-pointer"
+            onClick={() => {
+              localStorage.clear();
+              router.push("/login");
+            }}
+          />
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

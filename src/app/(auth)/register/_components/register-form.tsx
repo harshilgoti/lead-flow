@@ -18,9 +18,10 @@ import { z } from "zod";
 import { toast } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
+import { createUser } from "@/server/actions/users";
 
 const RegisterFormSchema = z.object({
-  full_name: z.string().min(1, {
+  fullName: z.string().min(1, {
     message: "Full name is required",
   }),
   email: z
@@ -49,19 +50,22 @@ export function RegisterForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
-    defaultValues: {},
+    defaultValues: { fullName: "", email: "", password: "" },
   });
 
-  const { handleSubmit, control } = form;
+  const { handleSubmit, reset, control } = form;
 
-  const onSubmit = (data: z.infer<typeof RegisterFormSchema>) => {
-    toast("You submitted the following values:", {
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  const onSubmit = async (data: z.infer<typeof RegisterFormSchema>) => {
+    try {
+      await createUser(data);
+
+      reset();
+
+      toast("Register successfully!");
+    } catch (error) {
+      reset();
+      toast.error(`${error}`);
+    }
   };
 
   return (
@@ -80,7 +84,7 @@ export function RegisterForm({
                 <div className="grid gap-2">
                   <FormField
                     control={control}
-                    name="full_name"
+                    name="fullName"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>

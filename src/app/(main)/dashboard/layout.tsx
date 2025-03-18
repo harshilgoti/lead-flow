@@ -7,8 +7,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+// import { useAuthStore } from "@/app/store/auth";
 
 export default function Page({ children }: PropsWithChildren) {
+  // const user = useAuthStore((state) => state);
+  // console.log("🚀 ~ Page ~ state:", user);
   return (
     <SidebarProvider>
       <AppSidebar />
