@@ -29,6 +29,12 @@ const data = {
       icon: SquareTerminal,
       isActive: true,
     },
+    {
+      title: "Users",
+      url: "/users",
+      icon: SquareTerminal,
+      isActive: true,
+    },
   ],
 };
 

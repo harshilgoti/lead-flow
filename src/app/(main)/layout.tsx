@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { AppSidebar } from "./_components/app-sidebar";
+import { AppSidebar } from "@/app/(main)/_components/app-sidebar";
 
 import { Separator } from "@/components/ui/separator";
 import {
