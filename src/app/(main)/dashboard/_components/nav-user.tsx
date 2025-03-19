@@ -8,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { logout } from "@/server/actions/auth";
 
 export function NavUser({
   user,
@@ -36,8 +37,8 @@ export function NavUser({
           </div>
           <LogOut
             className="cursor-pointer"
-            onClick={() => {
-              localStorage.clear();
+            onClick={async () => {
+              await logout();
               router.push("/login");
             }}
           />

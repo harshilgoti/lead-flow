@@ -18,6 +18,9 @@ import { z } from "zod";
 import { toast } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { login } from "@/server/actions/auth";
 
 const LoginFormSchema = z.object({
   email: z
@@ -50,15 +53,44 @@ export function LoginForm({
   });
 
   const { handleSubmit, control } = form;
+  const router = useRouter();
+  const [pendingCredentials, setPendingCredentials] = useState(false);
 
-  const onSubmit = (data: z.infer<typeof LoginFormSchema>) => {
-    toast("You submitted the following values:", {
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  const onSubmit = async (data: z.infer<typeof LoginFormSchema>) => {
+    console.log("🚀 ~ onSubmit ~ data:", data);
+    // await authClient.signIn.email(
+    //   {
+    //     email: data.email,
+    //     password: data.password,
+    //   },
+    //   {
+    //     onRequest: () => {
+    //       setPendingCredentials(true);
+    //     },
+    //     onSuccess: async () => {
+    //       router.push("/dashboard");
+    //       router.refresh();
+    //       toast("Login successfully");
+    //     },
+    //     onError: (ctx: ErrorContext) => {
+    //       setPendingCredentials(false);
+    //       toast.error("Something went wrong", {
+    //         description: ctx.error.message ?? "Something went wrong.",
+    //       });
+    //     },
+    //   }
+    // );
+    setPendingCredentials(true);
+    try {
+      const result = await login(data.email, data.password);
+      console.log("🚀 ~ onSubmit ~ result:", result);
+      router.push("/dashboard");
+      router.refresh();
+      toast("Login successfully");
+    } catch (error) {
+      toast.error(`${error}`);
+    }
+    setPendingCredentials(false);
   };
 
   return (
@@ -104,8 +136,12 @@ export function LoginForm({
                     )}
                   />
                 </div>
-                <Button type="submit" className="w-full">
-                  Login
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={pendingCredentials}
+                >
+                  {pendingCredentials ? "Loading.." : "Login"}
                 </Button>
 
                 <div className="text-center text-sm">

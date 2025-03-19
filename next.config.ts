@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    serverActions: {},
+  },
+  output: "standalone", // Ensures the app runs in a Node.js runtime
 };
 
 export default nextConfig;

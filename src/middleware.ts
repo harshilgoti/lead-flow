@@ -13,6 +13,11 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
+  if (token && isPublicRoute) {
+    // Redirect to login if token is missing
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
   return NextResponse.next(); // Continue to the requested page
 }
 
