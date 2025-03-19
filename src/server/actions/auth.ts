@@ -4,15 +4,25 @@ import { cookies } from "next/headers";
 import { db } from "@/app/db/drizzle";
 import { users } from "@/app/db/schema";
 import { eq } from "drizzle-orm";
-import { SignJWT } from "jose";
+import { jwtVerify, SignJWT } from "jose";
 import { hashPassword } from "@/hooks/utils";
 
+const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+
 export async function generateToken(user: { email: string }) {
-  const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
   return await new SignJWT(user)
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d")
     .sign(secret);
+}
+
+export async function verifyToken(token: string) {
+  try {
+    const { payload } = await jwtVerify(token, secret);
+    return payload;
+  } catch (error) {
+    throw new Error(`${error}`);
+  }
 }
 
 // **Login Action**
@@ -66,8 +76,9 @@ export async function getUser() {
   if (!token) return null;
 
   try {
-    // const decoded = jwt.verify(token, JWT_SECRET);
-    // return decoded;
+    const decoded = await verifyToken(token);
+    console.log("🚀 ~ getUser ~ decoded:", decoded);
+    return decoded;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return null;

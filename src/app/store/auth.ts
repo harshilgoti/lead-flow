@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { TUser } from "../db/schema/user";
 
 export type User = {
   full_name: string;
@@ -6,11 +7,11 @@ export type User = {
   id: string;
 };
 export type AuthState = {
-  user: User | null;
+  user: TUser | null;
 };
 
 export type AuthActions = {
-  setAuth: (user: User) => void;
+  setAuth: (user: TUser) => void;
 };
 
 export type AuthStore = AuthState & AuthActions;

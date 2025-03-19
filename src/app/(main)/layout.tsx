@@ -8,10 +8,14 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 // import { useAuthStore } from "@/app/store/auth";
+import { getUser } from "@/server/actions/auth";
+import LayoutClient from "./_components/layout-client";
+import { TUser } from "../db/schema/user";
 
-export default function Page({ children }: PropsWithChildren) {
+export default async function Page({ children }: PropsWithChildren) {
   // const user = useAuthStore((state) => state);
-  // console.log("🚀 ~ Page ~ state:", user);
+  const user = (await getUser()) as TUser;
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -23,7 +27,7 @@ export default function Page({ children }: PropsWithChildren) {
             Dashboard
           </div>
         </header>
-        {children}
+        <LayoutClient user={user}>{children}</LayoutClient>;
       </SidebarInset>
     </SidebarProvider>
   );
