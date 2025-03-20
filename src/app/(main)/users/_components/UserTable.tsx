@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
-import { TUser } from "@/app/db/schema/user";
+import { User } from "@prisma/client";
 
 export type Payment = {
   id: string;
@@ -14,11 +14,11 @@ export type Payment = {
 };
 
 type UserTableProps = {
-  users: TUser[];
+  users: User[];
 };
 
 const UsersTable = ({ users }: UserTableProps) => {
-  const columns: ColumnDef<TUser>[] = [
+  const columns: ColumnDef<User>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -40,7 +40,7 @@ const UsersTable = ({ users }: UserTableProps) => {
       ),
     },
     {
-      accessorKey: "fullName",
+      accessorKey: "full_name",
       header: "Full Name",
     },
     {

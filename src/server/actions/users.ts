@@ -1,54 +1,74 @@
 "use server";
 
-import { db } from "@/app/db/drizzle";
-import { TNewUser, users } from "@/app/db/schema/user";
+import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "@/hooks/utils";
-import { eq } from "drizzle-orm";
+
+const prisma = new PrismaClient();
 
 export const getUsers = async () => {
   try {
-    const AllUser = await db.select().from(users);
-    return AllUser;
+    const allUsers = await prisma.user.findMany({
+      include: {
+        lead: true,
+      },
+    });
+    return allUsers;
   } catch (error) {
-    throw new Error(`${error}`);
+    console.error("Error fetching users:", error);
+    throw new Error(`Failed to fetch users: ${error}`);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
-export const createUser = async (data: TNewUser) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createUser = async (data: any) => {
   try {
-    const [user] = await db
-      .insert(users)
-      .values({ ...data, password: hashPassword(data.password) })
-      .returning();
+    const user = await prisma.user.create({
+      data: {
+        full_name: data.full_name,
+        email: data.email,
+        password: hashPassword(data.password),
+      },
+    });
     return user;
   } catch (error) {
-    throw new Error(`${error}`);
+    console.error("Error creating user:", error);
+    throw new Error(`Failed to create user: ${error}`);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
-export const updateUser = async (data: TNewUser) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const updateUser = async (data: any) => {
   const { email, id } = data;
   try {
-    const [user] = await db
-      .update(users)
-      .set({ email })
-      .where(eq(users.id, Number(id)))
-      .returning();
+    const user = await prisma.user.update({
+      where: { id: Number(id) },
+      data: { email },
+    });
     return user;
   } catch (error) {
-    throw new Error(`${error}`);
+    console.error("Error updating user:", error);
+    throw new Error(`Failed to update user: ${error}`);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
-export const deleteUser = async (data: TNewUser) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const deleteUser = async (data: any) => {
   const { id } = data;
   try {
-    const [user] = await db
-      .delete(users)
-      .where(eq(users.id, Number(id)))
-      .returning();
+    const user = await prisma.user.delete({
+      where: { id: Number(id) },
+    });
     return user;
   } catch (error) {
-    throw new Error(`${error}`);
+    console.error("Error deleting user:", error);
+    throw new Error(`Failed to delete user: ${error}`);
+  } finally {
+    await prisma.$disconnect();
   }
 };

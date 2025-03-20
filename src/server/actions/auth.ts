@@ -1,13 +1,12 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { db } from "@/app/db/drizzle";
-import { users } from "@/app/db/schema";
-import { eq } from "drizzle-orm";
+import { PrismaClient } from "@prisma/client";
 import { jwtVerify, SignJWT } from "jose";
 import { hashPassword } from "@/hooks/utils";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+const prisma = new PrismaClient();
 
 export async function generateToken(user: { email: string }) {
   return await new SignJWT(user)
@@ -21,30 +20,29 @@ export async function verifyToken(token: string) {
     const { payload } = await jwtVerify(token, secret);
     return payload;
   } catch (error) {
-    throw new Error(`${error}`);
+    console.error("Error verifying token:", error);
+    return null; // Or throw an error as you were doing before
   }
 }
 
 // **Login Action**
 export async function login(email: string, password: string) {
   try {
-    // Find user in database
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email))
-      .execute();
+    // Find user in database using Prisma
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
-    if (!user[0]) {
+    if (!user) {
       throw new Error(`User not found`);
     }
 
-    if (hashPassword(password) !== user[0].password) {
+    if (hashPassword(password) !== user.password) {
       throw new Error(`Invalid credentials`);
     }
 
     // Generate JWT token
-    const token = await generateToken(user[0]);
+    const token = await generateToken({ email: user.email }); // Use the fetched user's email
 
     (
       await // Store token in HTTP-only cookie
@@ -57,9 +55,11 @@ export async function login(email: string, password: string) {
     });
 
     return token;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
+    console.error("Error during login:", error);
     throw new Error(`${error}`);
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -76,11 +76,17 @@ export async function getUser() {
   if (!token) return null;
 
   try {
-    const decoded = await verifyToken(token);
-    console.log("🚀 ~ getUser ~ decoded:", decoded);
-    return decoded;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const decoded = (await verifyToken(token)) as { email: string };
+    if (decoded && decoded.email) {
+      const user = await prisma.user.findUnique({
+        where: { email: decoded.email },
+      });
+
+      return user;
+    }
+    return null;
   } catch (error) {
+    console.error("Error getting user from token:", error);
     return null;
   }
 }

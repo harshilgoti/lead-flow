@@ -21,7 +21,7 @@ import Image from "next/image";
 import { createUser } from "@/server/actions/users";
 
 const RegisterFormSchema = z.object({
-  fullName: z.string().min(1, {
+  full_name: z.string().min(1, {
     message: "Full name is required",
   }),
   email: z
@@ -50,7 +50,7 @@ export function RegisterForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
-    defaultValues: { fullName: "", email: "", password: "" },
+    defaultValues: { full_name: "", email: "", password: "" },
   });
 
   const { handleSubmit, reset, control } = form;
@@ -84,7 +84,7 @@ export function RegisterForm({
                 <div className="grid gap-2">
                   <FormField
                     control={control}
-                    name="fullName"
+                    name="full_name"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>

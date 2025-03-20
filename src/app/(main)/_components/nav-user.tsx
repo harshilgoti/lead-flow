@@ -13,7 +13,7 @@ import { useAuthStore } from "@/app/store/auth";
 
 export function NavUser() {
   const user = useAuthStore((state) => state.user);
-  console.log("🚀 ~ user1:", user);
+  console.log("🚀 ~ NavUser ~ user:", user);
 
   const router = useRouter();
   return (
@@ -24,11 +24,11 @@ export function NavUser() {
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
           <Avatar className="h-8 w-8 rounded-lg">
-            <AvatarImage src={user?.fullName} alt={user?.fullName} />
+            <AvatarImage src={user?.full_name} alt={user?.full_name} />
             <AvatarFallback className="rounded-lg">CN</AvatarFallback>
           </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{user?.fullName}</span>
+            <span className="truncate font-semibold">{user?.full_name}</span>
             <span className="truncate text-xs">{user?.email}</span>
           </div>
           <LogOut
