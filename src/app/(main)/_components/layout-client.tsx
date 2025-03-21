@@ -1,14 +1,14 @@
 "use client";
 
-import { TUser } from "@/app/db/schema/user";
 import { useAuthStore } from "@/app/store/auth";
+import { User } from "@prisma/client";
 import { useEffect } from "react";
 
 export default function LayoutClient({
   user,
   children,
 }: {
-  user: TUser | null;
+  user: User | null;
   children: React.ReactNode;
 }) {
   //   const setUser = useUserStore((state) => state.setUser);

@@ -57,33 +57,9 @@ export function LoginForm({
   const [pendingCredentials, setPendingCredentials] = useState(false);
 
   const onSubmit = async (data: z.infer<typeof LoginFormSchema>) => {
-    console.log("🚀 ~ onSubmit ~ data:", data);
-    // await authClient.signIn.email(
-    //   {
-    //     email: data.email,
-    //     password: data.password,
-    //   },
-    //   {
-    //     onRequest: () => {
-    //       setPendingCredentials(true);
-    //     },
-    //     onSuccess: async () => {
-    //       router.push("/dashboard");
-    //       router.refresh();
-    //       toast("Login successfully");
-    //     },
-    //     onError: (ctx: ErrorContext) => {
-    //       setPendingCredentials(false);
-    //       toast.error("Something went wrong", {
-    //         description: ctx.error.message ?? "Something went wrong.",
-    //       });
-    //     },
-    //   }
-    // );
     setPendingCredentials(true);
     try {
-      const result = await login(data.email, data.password);
-      console.log("🚀 ~ onSubmit ~ result:", result);
+      await login(data.email, data.password);
       router.push("/dashboard");
       router.refresh();
       toast("Login successfully");

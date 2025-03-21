@@ -14,21 +14,20 @@ model User {
   email     String   @unique @db.VarChar(255)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
-  lead      Lead?
+  lead      Lead[]
 }
 
 model Lead {
   id          Int      @id @default(autoincrement())
-  userId      Int      @unique @map("user_id")
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  full_name   String   @db.VarChar(255)
+  user_id     Int      
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  full_name   String?  @db.VarChar(255)
   title       String   @db.VarChar(255)
   phone       String?  @db.VarChar(255)
   mobile      String?  @db.VarChar(255)
   lead_source String?  @db.VarChar(255)
-  industry    String?  @db.VarChar(255)
-  email       String?  @db.VarChar(255)
-  lead_status String?  @db.VarChar(255)
+  email       String   @db.VarChar(255)
+  lead_status String   @db.VarChar(255)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @map("updated_at")
 

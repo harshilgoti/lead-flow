@@ -35,6 +35,12 @@ const data = {
       icon: SquareTerminal,
       isActive: true,
     },
+    {
+      title: "Leads",
+      url: "/leads",
+      icon: SquareTerminal,
+      isActive: true,
+    },
   ],
 };
 

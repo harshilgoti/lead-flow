@@ -10,11 +10,12 @@ import {
 // import { useAuthStore } from "@/app/store/auth";
 import { getUser } from "@/server/actions/auth";
 import LayoutClient from "./_components/layout-client";
-import { TUser } from "../db/schema/user";
+import { User } from "@prisma/client";
+// import PageHeaderClient from "./_components/pag-header-client";
 
 export default async function Page({ children }: PropsWithChildren) {
   // const user = useAuthStore((state) => state);
-  const user = (await getUser()) as TUser;
+  const user = (await getUser()) as User;
 
   return (
     <SidebarProvider>
@@ -24,7 +25,7 @@ export default async function Page({ children }: PropsWithChildren) {
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            Dashboard
+            {/* <PageHeaderClient /> */}
           </div>
         </header>
         <LayoutClient user={user}>{children}</LayoutClient>;
