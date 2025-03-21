@@ -28,7 +28,7 @@ export default async function Page({ children }: PropsWithChildren) {
             {/* <PageHeaderClient /> */}
           </div>
         </header>
-        <LayoutClient user={user}>{children}</LayoutClient>;
+        <LayoutClient user={user}>{children}</LayoutClient>
       </SidebarInset>
     </SidebarProvider>
   );

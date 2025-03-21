@@ -1,7 +1,8 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { hashPassword } from "@/hooks/utils";
+import { revalidatePath } from "next/cache";
 
 const prisma = new PrismaClient();
 
@@ -22,7 +23,7 @@ export const getUsers = async () => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const createUser = async (data: any) => {
+export const createUser = async (data: Prisma.UserUncheckedCreateInput) => {
   try {
     const user = await prisma.user.create({
       data: {
@@ -31,6 +32,7 @@ export const createUser = async (data: any) => {
         password: hashPassword(data.password),
       },
     });
+    revalidatePath("/users");
     return user;
   } catch (error) {
     console.error("Error creating user:", error);
@@ -40,33 +42,33 @@ export const createUser = async (data: any) => {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const updateUser = async (data: any) => {
-  const { email, id } = data;
+export const updateUser = async (
+  id: number,
+  data: Prisma.UserUncheckedUpdateInput
+) => {
+  const { full_name } = data;
   try {
     const user = await prisma.user.update({
       where: { id: Number(id) },
-      data: { email },
+      data: { full_name },
     });
+    revalidatePath("/users");
     return user;
   } catch (error) {
-    console.error("Error updating user:", error);
     throw new Error(`Failed to update user: ${error}`);
   } finally {
     await prisma.$disconnect();
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const deleteUser = async (data: any) => {
-  const { id } = data;
+export const deleteUser = async (id: number) => {
   try {
     const user = await prisma.user.delete({
       where: { id: Number(id) },
     });
+    revalidatePath("/users");
     return user;
   } catch (error) {
-    console.error("Error deleting user:", error);
     throw new Error(`Failed to delete user: ${error}`);
   } finally {
     await prisma.$disconnect();

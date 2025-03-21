@@ -1,10 +1,14 @@
 "use client";
 import { DataTable } from "@/app/(main)/_components/table";
 import { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown } from "lucide-react";
+import { PenBox, Trash2 } from "lucide-react";
 import { User } from "@prisma/client";
+import { useState } from "react";
+import { deleteUser } from "@/server/actions/users";
+import { toast } from "sonner";
+import { UserForm } from "./UserForm";
 
 export type Payment = {
   id: string;
@@ -18,27 +22,36 @@ type UserTableProps = {
 };
 
 const UsersTable = ({ users }: UserTableProps) => {
+  const [open, setOpen] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [selectedData, setSelectedData] = useState<User | null>(null);
+
+  const handleDeleteLead = async (id: number) => {
+    await deleteUser(id);
+    toast("Lead deleted successfully!");
+  };
+
   const columns: ColumnDef<User>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-    },
+    // {
+    //   id: "select",
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       checked={
+    //         table.getIsAllPageRowsSelected() ||
+    //         (table.getIsSomePageRowsSelected() && "indeterminate")
+    //       }
+    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //       aria-label="Select all"
+    //     />
+    //   ),
+    //   cell: ({ row }) => (
+    //     <Checkbox
+    //       checked={row.getIsSelected()}
+    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //       aria-label="Select row"
+    //     />
+    //   ),
+    // },
     {
       accessorKey: "full_name",
       header: "Full Name",
@@ -52,7 +65,7 @@ const UsersTable = ({ users }: UserTableProps) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Email
-            <ArrowUpDown />
+            {/* <ArrowUpDown /> */}
           </Button>
         );
       },
@@ -60,11 +73,56 @@ const UsersTable = ({ users }: UserTableProps) => {
         <div className="lowercase">{row.getValue("email")}</div>
       ),
     },
+    {
+      accessorKey: "",
+      header: "Action",
+      cell: ({ row }) => {
+        return (
+          <div className="flex gap-2">
+            <PenBox
+              size={16}
+              className="cursor-pointer"
+              onClick={() => {
+                setEdit(true);
+                setOpen(true);
+                setSelectedData(row.original);
+              }}
+            />
+            <Trash2
+              size={16}
+              className="cursor-pointer"
+              onClick={() => {
+                handleDeleteLead(row.original.id);
+              }}
+            />
+          </div>
+        );
+      },
+    },
   ];
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <div className="flex justify-between items-center">
+        <strong>Users</strong>
+        <Button
+          onClick={() => {
+            setEdit(false);
+            setOpen(true);
+          }}
+        >
+          + Add
+        </Button>
+      </div>
       <DataTable data={users ?? []} columns={columns} />
+      {open && (
+        <UserForm
+          open={open}
+          setOpen={setOpen}
+          edit={edit}
+          selectedData={selectedData}
+        />
+      )}
     </div>
   );
 };

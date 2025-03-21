@@ -13,7 +13,6 @@ import { useAuthStore } from "@/app/store/auth";
 
 export function NavUser() {
   const user = useAuthStore((state) => state.user);
-  console.log("🚀 ~ NavUser ~ user:", user);
 
   const router = useRouter();
   return (

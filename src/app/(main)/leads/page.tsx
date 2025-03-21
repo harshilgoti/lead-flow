@@ -6,11 +6,7 @@ const LeadsPage = async () => {
   const users = await getUsers();
   const leads = await getLeads();
 
-  return (
-    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-      <LeadsTable users={users} leads={leads} />
-    </div>
-  );
+  return <LeadsTable users={users} leads={leads} />;
 };
 
 export default LeadsPage;
