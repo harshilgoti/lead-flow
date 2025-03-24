@@ -19,7 +19,7 @@ model User {
 
 model Lead {
   id          Int      @id @default(autoincrement())
-  user_id     Int      
+  user_id     Int
   user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   full_name   String?  @db.VarChar(255)
   title       String   @db.VarChar(255)
@@ -28,8 +28,15 @@ model Lead {
   lead_source String?  @db.VarChar(255)
   email       String   @db.VarChar(255)
   lead_status String   @db.VarChar(255)
+  type        LeadType
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @map("updated_at")
 
   @@map("leads")
+}
+
+enum LeadType {
+  WARM
+  HOT
+  HOLD
 }

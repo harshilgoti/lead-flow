@@ -21,6 +21,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "@/server/actions/auth";
+import Img from "@/app/assets/images/lead-management-software.webp";
 
 const LoginFormSchema = z.object({
   email: z
@@ -134,10 +135,9 @@ export function LoginForm({
           </Form>
           <div className="relative hidden bg-muted md:block">
             <Image
-              src="https://ui.shadcn.com/placeholder.svg"
+              src={Img}
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-              fill
             />
           </div>
         </CardContent>

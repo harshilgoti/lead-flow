@@ -13,17 +13,17 @@ import { toast } from "sonner";
 
 type LeadTableProps = {
   users: User[];
-  leads: Lead[];
+  leads: Lead[] | null;
 };
 
-const LeadsTable = ({ users, leads }: LeadTableProps) => {
+const LeadsTable = ({ users, leads = [] }: LeadTableProps) => {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [selectedData, setSelectedData] = useState<Lead | null>(null);
 
   const handleDeleteLead = async (id: number) => {
     await deleteLead(id);
-    toast("Lead deleted successfully!");
+    toast("Lead has been deleted successfully!");
   };
 
   const columns: ColumnDef<Lead>[] = [
@@ -58,6 +58,10 @@ const LeadsTable = ({ users, leads }: LeadTableProps) => {
     {
       accessorKey: "lead_source",
       header: "Source",
+    },
+    {
+      accessorKey: "type",
+      header: "Type",
     },
     {
       accessorKey: "lead_status",

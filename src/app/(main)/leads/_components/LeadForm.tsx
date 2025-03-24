@@ -27,6 +27,8 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { createLead, updateLead } from "@/server/actions/leads";
+import { LeadType } from "@prisma/client";
+import { LeadSource, LeadStatus } from "@/lib/utils";
 
 const LeadFormSchema = z.object({
   user_id: z.coerce.number().positive(),
@@ -38,6 +40,7 @@ const LeadFormSchema = z.object({
   lead_status: z.string().min(1, {
     message: "Status is required",
   }),
+  type: z.nativeEnum(LeadType),
   email: z
     .string()
     .min(1, {
@@ -54,6 +57,7 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
     phone: edit ? selectedData?.phone : "",
     mobile: edit ? selectedData?.mobile : "",
     lead_source: edit ? selectedData?.lead_source : "",
+    type: edit ? selectedData?.type : "",
     email: edit ? selectedData?.email : "",
     lead_status: edit ? selectedData?.lead_status : "",
   };
@@ -68,10 +72,10 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
     try {
       if (edit) {
         await updateLead(selectedData.id, data);
-        toast("Lead update successfully!");
+        toast("Lead has been update successfully!");
       } else {
         await createLead(data);
-        toast("Lead created successfully!");
+        toast("Lead has been created successfully!");
       }
       reset();
 
@@ -93,7 +97,7 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-8 "
           >
-            <div className="flex flex-col gap-6 ">
+            <div className="flex flex-col gap-2">
               <div className="grid gap-2">
                 <FormField
                   control={form.control}
@@ -187,22 +191,40 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
                   )}
                 />
               </div>
+
               <div className="grid gap-2">
                 <FormField
-                  control={control}
+                  control={form.control}
                   name="lead_source"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Lead source</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Mobile" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Lead source</FormLabel>
+                        <Select
+                          onValueChange={(value) =>
+                            setValue("lead_source", value)
+                          }
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a Lead Source" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {LeadSource?.map((u) => (
+                              <SelectItem key={u.value} value={u.value}>
+                                {u.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
-
               <div className="grid gap-2">
                 <FormField
                   control={control}
@@ -220,17 +242,69 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
               </div>
               <div className="grid gap-2">
                 <FormField
-                  control={control}
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Lead Type</FormLabel>
+                        <Select
+                          onValueChange={(value) =>
+                            setValue("type", value as LeadType)
+                          }
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a Lead Type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Object.values(LeadType)?.map((leadType) => (
+                              <SelectItem key={leadType} value={leadType}>
+                                {leadType}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <FormField
+                  control={form.control}
                   name="lead_status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Lead Status</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Lead Status" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Lead Status</FormLabel>
+                        <Select
+                          onValueChange={(value) =>
+                            setValue("lead_status", value)
+                          }
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a Lead Status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {LeadStatus?.map((u) => (
+                              <SelectItem key={u.value} value={u.value}>
+                                {u.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
             </div>

@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
 import { createUser } from "@/server/actions/users";
+import Img from "@/app/assets/images/lead-management-software.webp";
 
 const RegisterFormSchema = z.object({
   full_name: z.string().min(1, {
@@ -141,10 +142,9 @@ export function RegisterForm({
           </Form>
           <div className="relative hidden bg-muted md:block">
             <Image
-              src="https://ui.shadcn.com/placeholder.svg"
+              src={Img}
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-              fill
             />
           </div>
         </CardContent>

@@ -2,17 +2,30 @@
 
 import { Prisma, PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { verifyToken } from "./auth";
 
 const prisma = new PrismaClient();
 
 export const getLeads = async () => {
   try {
+    const token = (await cookies()).get("token")?.value;
+
+    if (!token) return null;
+
+    const decoded = (await verifyToken(token)) as { email: string };
+
     const allLeads = await prisma.lead.findMany({
+      where: {
+        user: {
+          email: decoded.email,
+        },
+      },
       include: {
         user: true,
       },
     });
-    return allLeads;
+    return allLeads ?? [];
   } catch (error) {
     throw new Error(`Failed to fetch users: ${error}`);
   } finally {
@@ -30,6 +43,7 @@ export const createLead = async (data: Prisma.LeadUncheckedCreateInput) => {
         phone: data.phone,
         mobile: data.mobile,
         lead_source: data.lead_source,
+        type: data.type,
         email: data.email,
         lead_status: data.lead_status,
       },
@@ -57,6 +71,7 @@ export const updateLead = async (
         phone: data.phone,
         mobile: data.mobile,
         lead_source: data.lead_source,
+        type: data.type,
         email: data.email,
         lead_status: data.lead_status,
       },
