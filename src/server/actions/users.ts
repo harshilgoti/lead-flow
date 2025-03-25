@@ -10,7 +10,7 @@ export const getUsers = async () => {
   try {
     const allUsers = await prisma.user.findMany({
       include: {
-        lead: true,
+        assign_leads: true,
       },
     });
     return allUsers;

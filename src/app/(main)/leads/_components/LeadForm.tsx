@@ -29,9 +29,10 @@ import { toast } from "sonner";
 import { createLead, updateLead } from "@/server/actions/leads";
 import { LeadType } from "@prisma/client";
 import { LeadSource, LeadStatus } from "@/lib/utils";
+import { useAuthStore } from "@/app/store/auth";
 
 const LeadFormSchema = z.object({
-  user_id: z.coerce.number().positive(),
+  assign_user_id: z.number().optional().nullable(),
   title: z.string(),
   full_name: z.string().optional(),
   phone: z.string().optional(),
@@ -50,8 +51,9 @@ const LeadFormSchema = z.object({
 });
 
 export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
+  const user = useAuthStore((state) => state.user);
   const defaultValue = {
-    user_id: edit ? selectedData?.user_id : 0,
+    assign_user_id: edit ? selectedData?.assign_user_id : 0,
     full_name: edit ? selectedData?.full_name : "",
     title: edit ? selectedData?.title : "",
     phone: edit ? selectedData?.phone : "",
@@ -64,6 +66,7 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
   const form = useForm<z.infer<typeof LeadFormSchema>>({
     resolver: zodResolver(LeadFormSchema),
     defaultValues: defaultValue,
+    reValidateMode: "onChange",
   });
 
   const { handleSubmit, control, reset, setValue } = form;
@@ -71,10 +74,13 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
   const onSubmit = async (data: z.infer<typeof LeadFormSchema>) => {
     try {
       if (edit) {
-        await updateLead(selectedData.id, data);
+        await updateLead(selectedData.id, {
+          ...data,
+          created_user_id: user.id,
+        });
         toast("Lead has been update successfully!");
       } else {
-        await createLead(data);
+        await createLead({ ...data, created_user_id: user.id });
         toast("Lead has been created successfully!");
       }
       reset();
@@ -101,14 +107,14 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
               <div className="grid gap-2">
                 <FormField
                   control={form.control}
-                  name="user_id"
+                  name="assign_user_id"
                   render={({ field }) => {
                     return (
                       <FormItem>
                         <FormLabel>Lead Owner</FormLabel>
                         <Select
                           onValueChange={(value) =>
-                            setValue("user_id", Number(value))
+                            setValue("assign_user_id", Number(value))
                           }
                           value={field.value + ""}
                         >
@@ -250,7 +256,9 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
                         <FormLabel>Lead Type</FormLabel>
                         <Select
                           onValueChange={(value) =>
-                            setValue("type", value as LeadType)
+                            setValue("type", value as LeadType, {
+                              shouldValidate: true,
+                            })
                           }
                           value={field.value}
                         >
@@ -284,7 +292,9 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
                         <FormLabel>Lead Status</FormLabel>
                         <Select
                           onValueChange={(value) =>
-                            setValue("lead_status", value)
+                            setValue("lead_status", value as string, {
+                              shouldValidate: true,
+                            })
                           }
                           value={field.value}
                         >

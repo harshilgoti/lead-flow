@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Lead, User } from "@prisma/client";
 import { LeadForm } from "./LeadForm";
 import { useState } from "react";
-import { PenBox, Trash2 } from "lucide-react";
+import { ChartNoAxesGantt, PenBox, Trash2 } from "lucide-react";
 import { deleteLead } from "@/server/actions/leads";
 import { toast } from "sonner";
+import Link from "next/link";
 
 type LeadTableProps = {
   users: User[];
@@ -17,6 +18,7 @@ type LeadTableProps = {
 };
 
 const LeadsTable = ({ users, leads = [] }: LeadTableProps) => {
+  console.log("🚀 ~ LeadsTable ~ leads:", leads);
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [selectedData, setSelectedData] = useState<Lead | null>(null);
@@ -83,6 +85,18 @@ const LeadsTable = ({ users, leads = [] }: LeadTableProps) => {
       cell: ({ row }) => (
         <div className="lowercase">{row.getValue("email")}</div>
       ),
+    },
+    {
+      accessorKey: "",
+      header: "Timeline",
+
+      cell: ({ row }) => {
+        return (
+          <Link href={`/leads/${row.original.id}`} className="text-center">
+            <ChartNoAxesGantt size={16} className="cursor-pointer" />
+          </Link>
+        );
+      },
     },
     {
       accessorKey: "",

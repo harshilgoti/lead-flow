@@ -8,31 +8,45 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  full_name String   @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @map("updated_at")
-  lead      Lead[]
+  id            Int      @id @default(autoincrement())
+  full_name     String   @db.VarChar(255)
+  password      String   @db.VarChar(255)
+  email         String   @unique @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @map("updated_at")
+  assign_leads  Lead[]   @relation("UserAssignLeads")
+  created_leads Lead[]   @relation("UserCreatedLeads")
+  histories     History[] @relation("UserHistory") 
 }
 
 model Lead {
-  id          Int      @id @default(autoincrement())
-  user_id     Int
-  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  full_name   String?  @db.VarChar(255)
-  title       String   @db.VarChar(255)
-  phone       String?  @db.VarChar(255)
-  mobile      String?  @db.VarChar(255)
-  lead_source String?  @db.VarChar(255)
-  email       String   @db.VarChar(255)
-  lead_status String   @db.VarChar(255)
-  type        LeadType
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @map("updated_at")
+  id              Int       @id @default(autoincrement())
+  assign_user_id  Int?
+  assign_user     User?     @relation("UserAssignLeads", fields: [assign_user_id], references: [id])
+  created_user_id Int
+  createdBy       User      @relation("UserCreatedLeads", fields: [created_user_id], references: [id])
+  full_name       String?   @db.VarChar(255)
+  title           String    @db.VarChar(255)
+  phone           String?   @db.VarChar(255)
+  mobile          String?   @db.VarChar(255)
+  lead_source     String?   @db.VarChar(255)
+  email           String    @db.VarChar(255)
+  lead_status     String    @db.VarChar(255)
+  type            LeadType
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @default(now()) @map("updated_at")
+  history         History[] @relation("UserLeadHistory")
+}
 
-  @@map("leads")
+model History {
+  id              Int      @id @default(autoincrement())
+  lead_id         Int
+  lead            Lead     @relation("UserLeadHistory", fields: [lead_id], references: [id])
+  title           String   @db.VarChar(255)
+  created_user_id Int
+  createdBy       User @relation("UserHistory",fields: [created_user_id], references: [id])
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @map("updated_at")
 }
 
 enum LeadType {
