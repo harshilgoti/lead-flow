@@ -3,7 +3,6 @@ import { DataTable } from "@/app/(main)/_components/table";
 import { ColumnDef } from "@tanstack/react-table";
 // import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-// import { ArrowUpDown } from "lucide-react";
 import { Lead, User } from "@prisma/client";
 import { LeadForm } from "./LeadForm";
 import { useState } from "react";
@@ -18,7 +17,6 @@ type LeadTableProps = {
 };
 
 const LeadsTable = ({ users, leads = [] }: LeadTableProps) => {
-  console.log("🚀 ~ LeadsTable ~ leads:", leads);
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [selectedData, setSelectedData] = useState<Lead | null>(null);

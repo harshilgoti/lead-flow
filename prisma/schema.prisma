@@ -8,15 +8,16 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  full_name     String   @db.VarChar(255)
-  password      String   @db.VarChar(255)
-  email         String   @unique @db.VarChar(255)
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @default(now()) @map("updated_at")
-  assign_leads  Lead[]   @relation("UserAssignLeads")
-  created_leads Lead[]   @relation("UserCreatedLeads")
-  histories     History[] @relation("UserHistory") 
+  id            Int       @id @default(autoincrement())
+  full_name     String    @db.VarChar(255)
+  password      String    @db.VarChar(255)
+  email         String    @unique @db.VarChar(255)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @default(now()) @map("updated_at")
+  assign_leads  Lead[]    @relation("UserAssignLeads")
+  created_leads Lead[]    @relation("UserCreatedLeads")
+  histories     History[] @relation("UserHistory")
+  notes         Note[]    @relation("UserNote")
 }
 
 model Lead {
@@ -44,7 +45,20 @@ model History {
   lead            Lead     @relation("UserLeadHistory", fields: [lead_id], references: [id])
   title           String   @db.VarChar(255)
   created_user_id Int
-  createdBy       User @relation("UserHistory",fields: [created_user_id], references: [id])
+  createdBy       User     @relation("UserHistory", fields: [created_user_id], references: [id])
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @map("updated_at")
+  notes           Note[]   @relation("LeadHistoryNotes")
+}
+
+model Note {
+  id              Int      @id @default(autoincrement())
+  history_id      Int
+  history         History  @relation("LeadHistoryNotes", fields: [history_id], references: [id])
+  title           String   @db.VarChar(255)
+  description     String   @db.VarChar(255)
+  created_user_id Int
+  createdBy       User     @relation("UserNote", fields: [created_user_id], references: [id])
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @default(now()) @map("updated_at")
 }

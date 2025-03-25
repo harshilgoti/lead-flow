@@ -13,6 +13,11 @@ export const getHistoryByLeadId = async (id: number) => {
         history: {
           include: {
             createdBy: true,
+            notes: {
+              include: {
+                createdBy: true,
+              },
+            },
           },
         },
       },

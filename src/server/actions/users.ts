@@ -15,14 +15,12 @@ export const getUsers = async () => {
     });
     return allUsers;
   } catch (error) {
-    console.error("Error fetching users:", error);
     throw new Error(`Failed to fetch users: ${error}`);
   } finally {
     await prisma.$disconnect();
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createUser = async (data: Prisma.UserUncheckedCreateInput) => {
   try {
     const user = await prisma.user.create({
@@ -35,7 +33,6 @@ export const createUser = async (data: Prisma.UserUncheckedCreateInput) => {
     revalidatePath("/users");
     return user;
   } catch (error) {
-    console.error("Error creating user:", error);
     throw new Error(`Failed to create user: ${error}`);
   } finally {
     await prisma.$disconnect();

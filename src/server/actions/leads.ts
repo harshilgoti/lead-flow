@@ -1,5 +1,6 @@
 "use server";
 
+import { leadStatusObj } from "@/hooks/utils";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
@@ -95,7 +96,9 @@ export const updateLead = async (
     if (foundLead?.lead_status !== data.lead_status) {
       await prisma.history.create({
         data: {
-          title: `Lead status updated ${foundLead?.lead_status} to ${data.lead_status}`,
+          title: `Lead status updated ${
+            leadStatusObj[foundLead?.lead_status ?? "contacted"]
+          } to ${leadStatusObj[(data?.lead_status as string) ?? "contacted"]}`,
           lead_id: id,
           created_user_id: Number(data.created_user_id),
         },
