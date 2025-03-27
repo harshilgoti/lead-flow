@@ -58,8 +58,6 @@ export async function login(email: string, password: string) {
   } catch (error) {
     console.error("Error during login:", error);
     throw new Error(`${error}`);
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

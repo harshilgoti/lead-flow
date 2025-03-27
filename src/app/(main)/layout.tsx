@@ -7,14 +7,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-// import { useAuthStore } from "@/app/store/auth";
 import { getUser } from "@/server/actions/auth";
 import LayoutClient from "./_components/layout-client";
 import { User } from "@prisma/client";
-// import PageHeaderClient from "./_components/pag-header-client";
 
 export default async function Page({ children }: PropsWithChildren) {
-  // const user = useAuthStore((state) => state);
   const user = (await getUser()) as User;
 
   return (

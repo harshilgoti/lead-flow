@@ -25,7 +25,5 @@ export const getHistoryByLeadId = async (id: number) => {
     return history;
   } catch (error) {
     throw new Error(`Failed to fetch history: ${error}`);
-  } finally {
-    await prisma.$disconnect();
   }
 };

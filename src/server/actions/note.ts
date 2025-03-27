@@ -14,7 +14,5 @@ export const createNote = async (data: Prisma.NoteUncheckedCreateInput) => {
     return note;
   } catch (error) {
     throw new Error(`Failed to create note: ${error}`);
-  } finally {
-    await prisma.$disconnect();
   }
 };

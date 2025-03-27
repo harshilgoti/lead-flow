@@ -16,8 +16,6 @@ export const getUsers = async () => {
     return allUsers;
   } catch (error) {
     throw new Error(`Failed to fetch users: ${error}`);
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -34,8 +32,6 @@ export const createUser = async (data: Prisma.UserUncheckedCreateInput) => {
     return user;
   } catch (error) {
     throw new Error(`Failed to create user: ${error}`);
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -53,8 +49,6 @@ export const updateUser = async (
     return user;
   } catch (error) {
     throw new Error(`Failed to update user: ${error}`);
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -67,7 +61,5 @@ export const deleteUser = async (id: number) => {
     return user;
   } catch (error) {
     throw new Error(`Failed to delete user: ${error}`);
-  } finally {
-    await prisma.$disconnect();
   }
 };

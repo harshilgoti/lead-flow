@@ -1,7 +1,7 @@
 "use server";
 
 import { leadStatusObj } from "@/hooks/utils";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { LeadType, Prisma, PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 // import { verifyToken } from "./auth";
@@ -21,6 +21,9 @@ export const getLeads = async () => {
       //     email: decoded.email,
       //   },
       // },
+      orderBy: {
+        createdAt: "desc",
+      },
       include: {
         createdBy: true,
       },
@@ -28,8 +31,6 @@ export const getLeads = async () => {
     return allLeads ?? [];
   } catch (error) {
     throw new Error(`Failed to fetch leads: ${error}`);
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -45,8 +46,6 @@ export const getLeadById = async (id: number) => {
     return lead;
   } catch (error) {
     throw new Error(`Failed to fetch lead: ${error}`);
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -81,8 +80,6 @@ export const createLead = async (data: Prisma.LeadUncheckedCreateInput) => {
     return lead;
   } catch (error) {
     throw new Error(`Failed to create lead: ${error}`);
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -126,8 +123,6 @@ export const updateLead = async (
     return lead;
   } catch (error) {
     throw new Error(`Failed to update lead: ${error}`);
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
@@ -140,7 +135,35 @@ export const deleteLead = async (id: number) => {
     return lead;
   } catch (error) {
     throw new Error(`Failed to delete lead: ${error}`);
-  } finally {
-    await prisma.$disconnect();
+  }
+};
+
+export const getLeadTypePercentage = async () => {
+  try {
+    const totalLeads = await prisma.lead.count();
+
+    if (totalLeads === 0) {
+      return {
+        WARM: 0,
+        HOT: 0,
+        HOLD: 0,
+      };
+    }
+
+    const leadCounts = await prisma.lead.groupBy({
+      by: ["type"],
+      _count: {
+        type: true,
+      },
+    });
+
+    const leadPercentages = leadCounts.reduce((acc, lead) => {
+      acc[lead.type] = ((lead._count.type / totalLeads) * 100).toFixed(2);
+      return acc;
+    }, {} as Record<LeadType, string>);
+
+    return leadPercentages;
+  } catch (error) {
+    throw new Error(`Failed to delete lead: ${error}`);
   }
 };

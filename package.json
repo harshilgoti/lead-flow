@@ -33,6 +33,7 @@
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
     "dotenv-expand": "^12.0.1",
+    "highcharts-react-official": "^3.2.1",
     "lucide-react": "^0.479.0",
     "moment": "^2.30.1",
     "next": "15.2.2",
