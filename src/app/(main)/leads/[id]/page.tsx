@@ -10,6 +10,8 @@ const TimeLinePage = async ({ params }) => {
 
   return (
     <div className=" p-4 pt-0">
+      <div className="text-lg font-semibold">History</div>
+      <hr className="mb-2" />
       <ol className="relative border-s border-gray-200 dark:border-gray-700">
         {lead?.history?.map((history) => (
           <li className="mb-10 ms-4" key={history.id}>
@@ -23,7 +25,7 @@ const TimeLinePage = async ({ params }) => {
             <p className="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
               by {history?.createdBy?.full_name}
             </p>
-            <div className="flex flex-col gap-4 ml-2">
+            <div className="flex flex-col gap-4 ml-2 border rounded p-4">
               <div className="font-semibold">Notes</div>
               <hr />
               {history?.notes?.map((note) => {
@@ -31,20 +33,24 @@ const TimeLinePage = async ({ params }) => {
                   <div key={note.id} className="flex flex-col gap-2">
                     <div key={note.id} className="flex gap-2">
                       <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarFallback className="rounded-lg">
-                          {note?.createdBy?.full_name.toUpperCase().slice(0, 2)}
+                        <AvatarFallback className="rounded-xl">
+                          <span className="text-sm">
+                            {note?.createdBy?.full_name
+                              .toUpperCase()
+                              .slice(0, 2)}
+                          </span>
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate font-semibold">
                           {note?.title}
                         </span>
-                        <span className="truncate text-xs">
+                        <span className="truncate text-sm">
                           {note?.description}
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center text-gray-400">
+                    <div className="flex items-center text-gray-400 text-xs">
                       Lead <Dot /> <div>Add Note </div> <Dot />{" "}
                       <Clock size={16} className="mr-2" />{" "}
                       {moment(note?.createdAt).fromNow()} by{" "}
@@ -53,8 +59,8 @@ const TimeLinePage = async ({ params }) => {
                   </div>
                 );
               })}
+              <AddNote history={history} />
             </div>
-            <AddNote history={history} />
           </li>
         ))}
       </ol>

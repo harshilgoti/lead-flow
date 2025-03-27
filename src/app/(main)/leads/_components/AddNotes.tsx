@@ -37,7 +37,6 @@ const AddNote = ({ history }) => {
   const { handleSubmit, control, reset } = form;
 
   const onSubmit = async (data: z.infer<typeof NoteFormSchema>) => {
-    console.log("🚀 ~ onSubmit ~ data:", data);
     try {
       await createNote({
         ...data,
