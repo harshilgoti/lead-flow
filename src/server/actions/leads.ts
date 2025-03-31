@@ -8,19 +8,22 @@ import { cookies } from "next/headers";
 
 const prisma = new PrismaClient();
 
-export const getLeads = async () => {
+export const getLeads = async (page: number, pageSize: number) => {
   try {
     const token = (await cookies()).get("token")?.value;
+    const skip = (page - 1) * pageSize;
 
     if (!token) return null;
 
     // const decoded = (await verifyToken(token)) as { email: string };
-    const allLeads = await prisma.lead.findMany({
+    const leads = await prisma.lead.findMany({
       // where: {
       //   assign_user: {
       //     email: decoded.email,
       //   },
       // },
+      skip,
+      take: pageSize,
       orderBy: {
         createdAt: "desc",
       },
@@ -28,7 +31,14 @@ export const getLeads = async () => {
         createdBy: true,
       },
     });
-    return allLeads ?? [];
+
+    const totalLeads = await prisma.lead.count();
+
+    return {
+      leads: leads ?? [],
+      totalPages: totalLeads > 0 ? Math.ceil(totalLeads / pageSize) : 1,
+      currentPage: page,
+    };
   } catch (error) {
     throw new Error(`Failed to fetch leads: ${error}`);
   }

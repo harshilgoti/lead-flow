@@ -14,7 +14,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ChevronDown } from "lucide-react";
-
+import { DataTablePagination } from "./data-table-pagination";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -33,6 +34,9 @@ import {
 } from "@/components/ui/table";
 
 interface DataTableProps<TData, TValue> {
+  currentPage?: number;
+  totalPages?: number;
+  pageSize?: number;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   showSearch?: boolean;
@@ -40,11 +44,15 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({
+  currentPage = 1,
+  totalPages = 1,
+  pageSize = 10,
   columns,
   data,
   showSearch = false,
   showColumnDropdown = false,
 }: DataTableProps<TData, TValue>) {
+  const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -71,6 +79,14 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
+
+  // Handle Page Navigation
+  const updateUrl = (page: number, size: number) => {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    params.set("pageSize", size.toString());
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <div className="w-full">
@@ -163,6 +179,16 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+      </div>
+      <div className="flex flex-col gap-2.5">
+        <DataTablePagination
+          table={table}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          onPageChange={(page) => updateUrl(page, pageSize)}
+          onPageSizeChange={(size) => updateUrl(currentPage, size)}
+        />
       </div>
       <div className="flex items-center justify-end space-x-2 py-4 hidden">
         <div className="flex-1 text-sm text-muted-foreground">

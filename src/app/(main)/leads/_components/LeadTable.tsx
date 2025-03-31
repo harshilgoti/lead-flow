@@ -14,9 +14,18 @@ import Link from "next/link";
 type LeadTableProps = {
   users: User[];
   leads: Lead[] | null;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
 };
 
-const LeadsTable = ({ users, leads = [] }: LeadTableProps) => {
+const LeadsTable = ({
+  users,
+  leads = [],
+  totalPages,
+  currentPage,
+  pageSize,
+}: LeadTableProps) => {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [selectedData, setSelectedData] = useState<Lead | null>(null);
@@ -137,7 +146,13 @@ const LeadsTable = ({ users, leads = [] }: LeadTableProps) => {
           + Add
         </Button>
       </div>
-      <DataTable data={leads ?? []} columns={columns} />
+      <DataTable
+        data={leads ?? []}
+        columns={columns}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        pageSize={pageSize}
+      />
       {open && (
         <LeadForm
           open={open}
