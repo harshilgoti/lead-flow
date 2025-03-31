@@ -3,25 +3,25 @@
 import { leadStatusObj } from "@/hooks/utils";
 import { LeadType, Prisma, PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 // import { verifyToken } from "./auth";
 
 const prisma = new PrismaClient();
 
-export const getLeads = async (page: number, pageSize: number) => {
+export const getLeads = async (
+  page: number,
+  pageSize: number,
+  search: string
+) => {
   try {
-    const token = (await cookies()).get("token")?.value;
     const skip = (page - 1) * pageSize;
-
-    if (!token) return null;
 
     // const decoded = (await verifyToken(token)) as { email: string };
     const leads = await prisma.lead.findMany({
-      // where: {
-      //   assign_user: {
-      //     email: decoded.email,
-      //   },
-      // },
+      where: {
+        title: {
+          contains: search,
+        },
+      },
       skip,
       take: pageSize,
       orderBy: {

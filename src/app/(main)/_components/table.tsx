@@ -15,7 +15,6 @@ import {
 } from "@tanstack/react-table";
 import { ChevronDown } from "lucide-react";
 import { DataTablePagination } from "./data-table-pagination";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -32,6 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { usePushQueryString } from "@/hooks/utils";
 
 interface DataTableProps<TData, TValue> {
   currentPage?: number;
@@ -52,7 +52,8 @@ export function DataTable<TData, TValue>({
   showSearch = false,
   showColumnDropdown = false,
 }: DataTableProps<TData, TValue>) {
-  const router = useRouter();
+  const pushQueryString = usePushQueryString();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -82,10 +83,8 @@ export function DataTable<TData, TValue>({
 
   // Handle Page Navigation
   const updateUrl = (page: number, size: number) => {
-    const params = new URLSearchParams();
-    params.set("page", page.toString());
-    params.set("pageSize", size.toString());
-    router.push(`?${params.toString()}`, { scroll: false });
+    pushQueryString("page", page.toString());
+    pushQueryString("pageSize", size.toString());
   };
 
   return (

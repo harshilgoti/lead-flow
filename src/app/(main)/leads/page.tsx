@@ -2,20 +2,33 @@ import { getUsers } from "@/server/actions/users";
 import LeadsTable from "./_components/LeadTable";
 import { getLeads } from "@/server/actions/leads";
 
+import { unstable_cache } from "next/cache";
+
+const getCachedUser = unstable_cache(async () => getUsers(), ["users"], {
+  revalidate: 60 * 60 * 24,
+});
+
+const getCacheLeads = unstable_cache(
+  async (page, pageSize, search) => getLeads(page, pageSize, search),
+  ["leads"],
+  {
+    revalidate: 60 * 60,
+  }
+);
+
 const LeadsPage = async ({
   searchParams,
 }: {
-  searchParams: { page?: string; pageSize?: string };
+  searchParams: { page?: string; pageSize?: string; search?: string };
 }) => {
-  const { page: p, pageSize: ps } = await searchParams;
+  const { page: p, pageSize: ps, search } = await searchParams;
 
   const page = Number(p) || 1;
   const pageSize = Number(ps) || 10;
 
-  const users = await getUsers();
-  // const { leads, totalPages } = await getLeads(page, pageSize);
+  const users = await getCachedUser();
 
-  const leadsData = await getLeads(page, pageSize);
+  const leadsData = await getCacheLeads(page, pageSize, search);
 
   if (!leadsData) {
     return (
