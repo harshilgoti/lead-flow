@@ -31,7 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { usePushQueryString } from "@/hooks/utils";
+import { usePushQueryStrings } from "@/hooks/utils";
 
 interface DataTableProps<TData, TValue> {
   currentPage?: number;
@@ -52,7 +52,7 @@ export function DataTable<TData, TValue>({
   showSearch = false,
   showColumnDropdown = false,
 }: DataTableProps<TData, TValue>) {
-  const pushQueryString = usePushQueryString();
+  const pushQueryStrings = usePushQueryStrings();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -83,8 +83,10 @@ export function DataTable<TData, TValue>({
 
   // Handle Page Navigation
   const updateUrl = (page: number, size: number) => {
-    pushQueryString("page", page.toString());
-    pushQueryString("pageSize", size.toString());
+    pushQueryStrings([
+      { queryName: "page", queryValue: page.toString() },
+      { queryName: "pageSize", queryValue: size.toString() },
+    ]);
   };
 
   return (

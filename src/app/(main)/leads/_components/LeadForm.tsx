@@ -85,11 +85,11 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
           created_user_id: user.id,
         });
         setLoading(false);
-        toast("Lead has been update successfully!");
+        toast.success("Lead has been update successfully!");
       } else {
         await createLead({ ...data, created_user_id: user.id });
         setLoading(false);
-        toast("Lead has been created successfully!");
+        toast.success("Lead has been created successfully!");
       }
       reset();
 

@@ -44,7 +44,7 @@ const AddNote = ({ history }) => {
         created_user_id: user.id,
       });
       reset();
-      toast("Note create successfully");
+      toast.success("Note create successfully");
     } catch (error) {
       toast.error(`${error}`);
     }

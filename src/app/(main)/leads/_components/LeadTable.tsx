@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { usePushQueryString } from "@/hooks/utils";
 import { useDebouncedCallback } from "use-debounce";
+import Spinner from "@/app/(main)/_components/spinner";
 
 type LeadTableProps = {
   users: User[];
@@ -38,11 +39,14 @@ const LeadsTable = ({
   const clearQueryStaring = useClearQueryString();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [selectedData, setSelectedData] = useState<Lead | null>(null);
 
   const handleDeleteLead = async (id: number) => {
+    setDeleting(true);
     await deleteLead(id);
-    toast("Lead has been deleted successfully!");
+    setDeleting(false);
+    toast.success("Lead has been deleted successfully!");
   };
 
   const columns: ColumnDef<Lead>[] = [
@@ -139,13 +143,18 @@ const LeadsTable = ({
                 setSelectedData(row.original);
               }}
             />
-            <Trash2
-              size={16}
-              className="cursor-pointer"
-              onClick={() => {
-                handleDeleteLead(row.original.id);
-              }}
-            />
+            {selectedData?.id === row.original.id && deleting ? (
+              <Spinner />
+            ) : (
+              <Trash2
+                size={16}
+                className="cursor-pointer"
+                onClick={() => {
+                  setSelectedData(row.original);
+                  handleDeleteLead(row.original.id);
+                }}
+              />
+            )}
           </div>
         );
       },

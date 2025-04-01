@@ -1,13 +1,8 @@
 "use client";
 import { LeadSource, LeadStatus } from "@/lib/utils";
-import { sha256 } from "@noble/hashes/sha256";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import qs from "query-string";
-
-export function hashPassword(password: string) {
-  return Buffer.from(sha256(password)).toString("hex");
-}
 
 export const leadStatusObj = LeadStatus.reduce((acc, cur) => {
   return { ...acc, [cur.value]: cur.label };

@@ -62,7 +62,7 @@ export function RegisterForm({
 
       reset();
 
-      toast("Register successfully!");
+      toast.success("Register successfully!");
     } catch (error) {
       reset();
       toast.error(`${error}`);

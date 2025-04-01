@@ -53,10 +53,10 @@ export const UserForm = ({ open, setOpen, edit, selectedData }) => {
     try {
       if (edit) {
         await updateUser(selectedData.id, data);
-        toast("User updated successfully!");
+        toast.success("User updated successfully!");
       } else {
         await createUser({ ...data, password: "Password@1234" });
-        toast("User created successfully!");
+        toast.success("User created successfully!");
       }
       reset();
       setLoading(false);

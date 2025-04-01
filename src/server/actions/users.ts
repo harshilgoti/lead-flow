@@ -1,7 +1,7 @@
 "use server";
 
+import { hashPassword } from "@/lib/utils";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { hashPassword } from "@/hooks/utils";
 import { revalidatePath } from "next/cache";
 
 const prisma = new PrismaClient();

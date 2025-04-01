@@ -9,6 +9,7 @@ import { useState } from "react";
 import { deleteUser } from "@/server/actions/users";
 import { toast } from "sonner";
 import { UserForm } from "./UserForm";
+import Spinner from "@/app/(main)/_components/spinner";
 
 export type Payment = {
   id: string;
@@ -24,11 +25,15 @@ type UserTableProps = {
 const UsersTable = ({ users }: UserTableProps) => {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [selectedData, setSelectedData] = useState<User | null>(null);
 
   const handleDeleteLead = async (id: number) => {
+    setDeleting(true);
     await deleteUser(id);
-    toast("Lead deleted successfully!");
+    setDeleting(false);
+
+    toast.success("Lead deleted successfully!");
   };
 
   const columns: ColumnDef<User>[] = [
@@ -88,13 +93,18 @@ const UsersTable = ({ users }: UserTableProps) => {
                 setSelectedData(row.original);
               }}
             />
-            <Trash2
-              size={16}
-              className="cursor-pointer"
-              onClick={() => {
-                handleDeleteLead(row.original.id);
-              }}
-            />
+            {selectedData?.id === row.original.id && deleting ? (
+              <Spinner />
+            ) : (
+              <Trash2
+                size={16}
+                className="cursor-pointer"
+                onClick={() => {
+                  setSelectedData(row.original);
+                  handleDeleteLead(row.original.id);
+                }}
+              />
+            )}
           </div>
         );
       },

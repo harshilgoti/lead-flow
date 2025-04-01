@@ -1,9 +1,14 @@
 import { clsx, type ClassValue } from "clsx";
+import { sha256 } from "@noble/hashes/sha256";
 
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function hashPassword(password: string) {
+  return Buffer.from(sha256(password)).toString("hex");
 }
 
 export const LeadSource = [
