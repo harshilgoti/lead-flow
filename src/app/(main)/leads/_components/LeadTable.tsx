@@ -10,7 +10,11 @@ import { ChartNoAxesGantt, PenBox, Trash2 } from "lucide-react";
 import { deleteLead } from "@/server/actions/leads";
 import { toast } from "sonner";
 import Link from "next/link";
-import { leadSourceObj, leadStatusObj } from "@/hooks/utils";
+import {
+  leadSourceObj,
+  leadStatusObj,
+  useClearQueryString,
+} from "@/hooks/utils";
 import { Input } from "@/components/ui/input";
 import { usePushQueryString } from "@/hooks/utils";
 import { useDebouncedCallback } from "use-debounce";
@@ -31,6 +35,7 @@ const LeadsTable = ({
   pageSize,
 }: LeadTableProps) => {
   const pushQueryString = usePushQueryString();
+  const clearQueryStaring = useClearQueryString();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [selectedData, setSelectedData] = useState<Lead | null>(null);
@@ -148,8 +153,8 @@ const LeadsTable = ({
   ];
 
   const handleSearch = useDebouncedCallback((e) => {
-    console.log(e.target.value);
-    pushQueryString("search", e.target.value);
+    if (!e.target.value) clearQueryStaring(["search"]);
+    else pushQueryString("search", e.target.value);
   }, 300);
 
   return (

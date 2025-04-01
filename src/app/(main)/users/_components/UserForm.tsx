@@ -21,6 +21,8 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { createUser, updateUser } from "@/server/actions/users";
+import { useState } from "react";
+import Spinner from "@/app/(main)/_components/spinner";
 
 const UserFormSchema = z.object({
   full_name: z.string(),
@@ -33,6 +35,8 @@ const UserFormSchema = z.object({
 });
 
 export const UserForm = ({ open, setOpen, edit, selectedData }) => {
+  const [loading, setLoading] = useState(false);
+
   const defaultValue = {
     full_name: edit ? selectedData?.full_name : "",
     email: edit ? selectedData?.email : "",
@@ -45,6 +49,7 @@ export const UserForm = ({ open, setOpen, edit, selectedData }) => {
   const { handleSubmit, control, reset } = form;
 
   const onSubmit = async (data: z.infer<typeof UserFormSchema>) => {
+    setLoading(true);
     try {
       if (edit) {
         await updateUser(selectedData.id, data);
@@ -54,10 +59,11 @@ export const UserForm = ({ open, setOpen, edit, selectedData }) => {
         toast("User created successfully!");
       }
       reset();
-
+      setLoading(false);
       setOpen(false);
     } catch (error) {
       reset();
+      setLoading(false);
       toast.error(`${error}`);
     }
   };
@@ -107,7 +113,9 @@ export const UserForm = ({ open, setOpen, edit, selectedData }) => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Save</Button>
+              <Button type="submit" disabled={loading} className="w-16">
+                {loading ? <Spinner /> : "Save"}
+              </Button>
               <Button variant={"outline"} onClick={() => setOpen(false)}>
                 Cancel
               </Button>

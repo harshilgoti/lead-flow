@@ -30,6 +30,8 @@ import { createLead, updateLead } from "@/server/actions/leads";
 import { LeadType } from "@prisma/client";
 import { LeadSource, LeadStatus } from "@/lib/utils";
 import { useAuthStore } from "@/app/store/auth";
+import { useState } from "react";
+import Spinner from "@/app/(main)/_components/spinner";
 
 const LeadFormSchema = z.object({
   assign_user_id: z.number().optional().nullable(),
@@ -52,6 +54,9 @@ const LeadFormSchema = z.object({
 
 export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
   const user = useAuthStore((state) => state.user);
+
+  const [loading, setLoading] = useState(false);
+
   const defaultValue = {
     assign_user_id: edit ? selectedData?.assign_user_id : 0,
     full_name: edit ? selectedData?.full_name : "",
@@ -72,15 +77,18 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
   const { handleSubmit, control, reset, setValue } = form;
 
   const onSubmit = async (data: z.infer<typeof LeadFormSchema>) => {
+    setLoading(true);
     try {
       if (edit) {
         await updateLead(selectedData.id, {
           ...data,
           created_user_id: user.id,
         });
+        setLoading(false);
         toast("Lead has been update successfully!");
       } else {
         await createLead({ ...data, created_user_id: user.id });
+        setLoading(false);
         toast("Lead has been created successfully!");
       }
       reset();
@@ -319,8 +327,14 @@ export const LeadForm = ({ open, setOpen, users, edit, selectedData }) => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Save</Button>
-              <Button variant={"outline"} onClick={() => setOpen(false)}>
+              <Button type="submit" disabled={loading} className="w-16">
+                {loading ? <Spinner /> : "Save"}
+              </Button>
+              <Button
+                variant={"outline"}
+                onClick={() => setOpen(false)}
+                disabled={loading}
+              >
                 Cancel
               </Button>
             </DialogFooter>
